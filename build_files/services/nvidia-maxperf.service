@@ -1,0 +1,12 @@
+[Unit]
+Description=Force NVIDIA Maximum Performance Mode
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/nvidia-smi -pm 1
+ExecStart=/usr/bin/nvidia-smi -ac 5001,2700
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
