@@ -1,0 +1,34 @@
+name: Build ISO Installer
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-iso:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install required packages
+        run: |
+          sudo apt update
+          sudo apt install -y qemu-utils podman
+
+      - name: Build ISO using bootc-image-builder
+        run: |
+          sudo podman run --rm --privileged \
+            -v ${{ github.workspace }}/output:/output \
+            quay.io/centos-bootc-dev/bootc-image-builder:latest \
+            --type iso \
+            ghcr.io/${{ github.repository_owner }}/cosmic-gaming-don:latest
+
+      - name: Upload ISO
+        uses: actions/upload-artifact@v4
+        with:
+          name: cosmic-gaming-don-iso
+          path: output/*.iso
