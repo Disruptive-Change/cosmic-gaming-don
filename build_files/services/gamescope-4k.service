@@ -1,0 +1,10 @@
+[Unit]
+Description=Gamescope 4K HDR Autostart
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/gamescope -w 3840 -h 2160 --hdr-enabled --expose-wayland
+Restart=no
+
+[Install]
+WantedBy=graphical-session.target
