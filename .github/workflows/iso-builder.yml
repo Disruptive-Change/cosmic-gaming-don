@@ -19,9 +19,9 @@ jobs:
           sudo apt update
           sudo apt install -y git podman make golang qemu-utils go-md2man
 
-      - name: Clone bootc-image-builder (Git protocol)
+      - name: Clone bootc-image-builder (GitHub mirror)
         run: |
-          git clone git://gitlab.com/bootc-org/bootc-image-builder.git
+          git clone https://github.com/bootc-org/bootc-image-builder.git
 
       - name: Build bootc-image-builder locally
         run: |
