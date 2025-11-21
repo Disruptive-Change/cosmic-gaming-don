@@ -7,7 +7,7 @@ on:
 
 permissions:
   contents: read
-  packages: write   # required to push to GHCR
+  packages: write
 
 jobs:
   build:
@@ -29,7 +29,7 @@ jobs:
         with:
           containerfiles: |
             ./Containerfile
-          image: cosmic-gaming-don
+          image: disruptive-change/cosmic-gaming-don
           tags: latest
           labels: |
             org.opencontainers.image.source=${{ github.repository }}
@@ -37,6 +37,6 @@ jobs:
       - name: Push image
         uses: redhat-actions/push-to-registry@v2
         with:
-          image: cosmic-gaming-don
+          image: disruptive-change/cosmic-gaming-don
           tags: latest
-          registry: ghcr.io/${{ github.repository_owner }}
+          registry: ghcr.io
