@@ -20,10 +20,14 @@ jobs:
           sudo apt update
           sudo apt install -y qemu-utils podman
 
-      - name: Prepare output directory
+      - name: Login podman to GHCR
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Prepare output dir
         run: mkdir -p output
 
-      - name: Build ISO using bootc-image-builder
+      - name: Build ISO
         run: |
           sudo podman run --rm --privileged \
             -v ${{ github.workspace }}:/workspace \
@@ -33,7 +37,7 @@ jobs:
             --config /workspace/disk_config/iso-kde.toml \
             ghcr.io/${{ github.repository_owner }}/cosmic-gaming-don:latest
 
-      - name: Upload ISO artifact
+      - name: Upload ISO
         uses: actions/upload-artifact@v4
         with:
           name: cosmic-gaming-don-iso
