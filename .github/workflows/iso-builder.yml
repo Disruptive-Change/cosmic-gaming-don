@@ -5,7 +5,6 @@ on:
 
 permissions:
   contents: write
-  packages: read
 
 jobs:
   build-iso:
@@ -15,26 +14,25 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Install required packages
+      - name: Install system dependencies
         run: |
           sudo apt update
-          sudo apt install -y qemu-utils podman
+          sudo apt install -y \
+            git golang go-md2man qemu-utils \
+            podman make
 
-      - name: Login podman to GHCR
+      - name: Clone bootc-image-builder
         run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | sudo podman login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - name: Prepare output dir
-        run: mkdir -p output
+          git clone https://github.com/containers/bootc-image-builder.git
+          cd bootc-image-builder
+          make build
 
       - name: Build ISO
         run: |
-          sudo podman run --rm --privileged \
-            -v ${{ github.workspace }}:/workspace \
-            -v ${{ github.workspace }}/output:/output \
-            quay.io/fedora/bootc-image-builder:latest \
+          sudo ./bootc-image-builder/bin/bootc-image-builder \
             --type iso \
-            --config /workspace/disk_config/iso-kde.toml \
+            --config disk_config/iso-kde.toml \
+            --output-dir output \
             ghcr.io/${{ github.repository_owner }}/cosmic-gaming-don:latest
 
       - name: Upload ISO
