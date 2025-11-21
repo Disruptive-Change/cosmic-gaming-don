@@ -31,7 +31,7 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/cosmic-gaming-don:latest
 
       - name: Upload ISO
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: cosmic-gaming-don-iso
           path: output/*.iso
