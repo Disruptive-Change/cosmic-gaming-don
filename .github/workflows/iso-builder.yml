@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: write
+  packages: read
 
 jobs:
   build-iso:
@@ -19,12 +20,17 @@ jobs:
           sudo apt update
           sudo apt install -y qemu-utils podman
 
-      - name: Build ISO using bootc-image-builder
+      - name: Prepare output directory
+        run: mkdir -p output
+
+      - name: Build ISO using Fedora bootc-image-builder
         run: |
           sudo podman run --rm --privileged \
+            -v ${{ github.workspace }}/disk_config:/config \
             -v ${{ github.workspace }}/output:/output \
-            quay.io/centos-bootc-dev/bootc-image-builder:latest \
+            quay.io/fedora/fedora-bootc-image-builder:latest \
             --type iso \
+            --config /config/iso-kde.toml \
             ghcr.io/${{ github.repository_owner }}/cosmic-gaming-don:latest
 
       - name: Upload ISO
