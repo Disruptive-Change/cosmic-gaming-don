@@ -12,15 +12,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout THIS repo
+      - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Checkout bootc-image-builder
-        uses: actions/checkout@v4
-        with:
-          repository: bootc-org/bootc-image-builder
-          path: bootc-image-builder
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
         run: |
@@ -29,17 +22,15 @@ jobs:
 
       - name: Build ISO
         run: |
-          sudo podman build -t bootc-builder ./bootc-image-builder
-
           sudo podman run --rm --privileged \
             -v ${{ github.workspace }}:/workspace \
             -v ${{ github.workspace }}/output:/output \
-            bootc-builder \
+            quay.io/fedora-bootc/bootc-image-builder:latest \
             --type iso \
             --config /workspace/disk_config/iso-kde.toml \
             ghcr.io/${{ github.repository_owner }}/cosmic-gaming-don:latest
 
-      - name: Upload ISO artifact
+      - name: Upload ISO
         uses: actions/upload-artifact@v4
         with:
           name: cosmic-gaming-don-iso
