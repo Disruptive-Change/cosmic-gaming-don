@@ -5,7 +5,6 @@ on:
 
 permissions:
   contents: write
-  packages: read
 
 jobs:
   build-iso:
@@ -18,12 +17,11 @@ jobs:
       - name: Install required packages
         run: |
           sudo apt update
-          sudo apt install -y \
-            git podman make golang qemu-utils go-md2man
+          sudo apt install -y git podman make golang qemu-utils go-md2man
 
-      - name: Clone bootc-image-builder (GitLab)
+      - name: Clone bootc-image-builder (Git protocol)
         run: |
-          git clone https://gitlab.com/bootc-org/bootc-image-builder.git
+          git clone git://gitlab.com/bootc-org/bootc-image-builder.git
 
       - name: Build bootc-image-builder locally
         run: |
