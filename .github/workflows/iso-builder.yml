@@ -5,38 +5,38 @@ on:
 
 permissions:
   contents: write
+  packages: read
 
 jobs:
   build-iso:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout this repo
+      - name: Checkout THIS repo
         uses: actions/checkout@v4
 
-      - name: Install required packages
+      - name: Checkout bootc-image-builder
+        uses: actions/checkout@v4
+        with:
+          repository: bootc-org/bootc-image-builder
+          path: bootc-image-builder
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y git podman make golang qemu-utils go-md2man
+          sudo apt install -y podman qemu-utils
 
-      - name: Clone bootc-image-builder (GitHub mirror)
+      - name: Build ISO
         run: |
-          git clone https://github.com/bootc-org/bootc-image-builder.git
+          sudo podman build -t bootc-builder ./bootc-image-builder
 
-      - name: Build bootc-image-builder locally
-        run: |
-          cd bootc-image-builder
-          make build
-
-      - name: Prepare output directory
-        run: mkdir -p output
-
-      - name: Build ISO from your image
-        run: |
-          sudo ./bootc-image-builder/bin/bootc-image-builder \
+          sudo podman run --rm --privileged \
+            -v ${{ github.workspace }}:/workspace \
+            -v ${{ github.workspace }}/output:/output \
+            bootc-builder \
             --type iso \
-            --config disk_config/iso-kde.toml \
-            --output-dir output \
+            --config /workspace/disk_config/iso-kde.toml \
             ghcr.io/${{ github.repository_owner }}/cosmic-gaming-don:latest
 
       - name: Upload ISO artifact
