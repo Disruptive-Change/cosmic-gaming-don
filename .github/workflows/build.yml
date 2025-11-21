@@ -17,26 +17,19 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Login to GHCR
+      - name: Login to GHCR (using PAT)
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GHCR_PAT }}
 
       - name: Build image
         uses: redhat-actions/buildah-build@v2
         with:
           containerfiles: |
             ./Containerfile
-          image: cosmic-gaming-don
+          image: ghcr.io/${{ github.repository_owner }}/cosmic-gaming-don
           tags: latest
           labels: |
-            org.opencontainers.image.source=${{ github.repository }}
-
-      - name: Push image
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          image: cosmic-gaming-don
-          tags: latest
-          registry: ghcr.io/disruptive-change
+            org.opencontainers.
