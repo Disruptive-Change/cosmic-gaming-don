@@ -15,28 +15,25 @@ jobs:
       - name: Checkout this repo
         uses: actions/checkout@v4
 
-      - name: Install base tools
+      - name: Install required packages
         run: |
           sudo apt update
           sudo apt install -y \
-            git podman golang make qemu-utils go-md2man
+            git podman make golang qemu-utils go-md2man
 
-      - name: Clone bootc-image-builder source
-        uses: actions/checkout@v4
-        with:
-          repository: containers/bootc-image-builder
-          path: bootc-image-builder
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Clone bootc-image-builder (GitLab)
+        run: |
+          git clone https://gitlab.com/bootc-org/bootc-image-builder.git
 
       - name: Build bootc-image-builder locally
         run: |
           cd bootc-image-builder
           make build
 
-      - name: Create output directory
+      - name: Prepare output directory
         run: mkdir -p output
 
-      - name: Build ISO (using your custom image)
+      - name: Build ISO from your image
         run: |
           sudo ./bootc-image-builder/bin/bootc-image-builder \
             --type iso \
